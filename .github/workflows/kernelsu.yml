@@ -16,7 +16,7 @@ jobs:
     - name: 构建编译内核环境
       run: |
         sudo apt-get update
-        sudo - `actions/upload-artifact@v3`.
+        sudo - `actions/upload-artifact@v4`.
 
 2. Update the workflow fileE apt-get -y -qq install git make bc bison ccache opens if there are any syntax errors or version mismatches.
 
