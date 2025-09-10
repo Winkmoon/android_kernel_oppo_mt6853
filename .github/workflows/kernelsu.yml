@@ -55,8 +55,8 @@ jobs:
     - name: 拉取并集成SukiSU
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel-4.14
-        sed -i "\$s|echo \"\\\$res\"|echo \"-Xinran_StarBai_mt6853\"|" ./scripts/setlocalversion
-        #curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s nongki
+        #sed -i "\$s|echo \"\\\$res\"|echo \"-Xinran_StarBai_mt6853\"|" ./scripts/setlocalversion
+        curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s nongki
 
         # 更新 SukiSU 版本号
           cd ./KernelSU
