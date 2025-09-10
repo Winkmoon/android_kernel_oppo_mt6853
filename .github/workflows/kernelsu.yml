@@ -55,7 +55,7 @@ jobs:
     - name: 拉取并集成SukiSU
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel-4.14
-        #sed -i "\$s|echo \"\\\$res\"|echo \"-Xinran_StarBai_mt6853\"|" ./scripts/setlocalversion
+        sed -i "\$s|echo \"\\\$res\"|echo \"-Xinran_StarBai_mt6853\"|" ./scripts/setlocalversion
         curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s nongki
 
         # 更新 SukiSU 版本号
@@ -67,7 +67,7 @@ jobs:
           # 配置内核选项
           echo "CONFIG_MODULE_SIG=n" >> ./arch/arm64/configs/OPPO-K7x_defconfig
           echo "CONFIG_MODULE_SIG_ALL=n" >> ./arch/arm64/configs/OPPO-K7x_defconfig
-          echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/OPPO-K7x_defconfig
+          echo "CONFIG_KSU=y" >> ./arch/arm64/configs/OPPO-K7x_defconfig
           echo "CONFIG_KSU_TRACEPOINT_HOOK=y" >> ./arch/arm64/configs/OPPO-K7x_defconfig
 
 
