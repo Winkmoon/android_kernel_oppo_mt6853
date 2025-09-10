@@ -96,7 +96,7 @@ jobs:
 
 
     - name: 上传 Anykernel3
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: oppok7x-SukiSU@Xinran_StarBai-ak3
         path: kernel_workspace/*.zip
