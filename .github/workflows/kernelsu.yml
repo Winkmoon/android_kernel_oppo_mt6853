@@ -1,4 +1,4 @@
-name: 构建PERM00_Android12. the `actions/upload-artifact@v3` action. Ensure that1内核-支持KernelSU
+name: 构建 OPPOK7x_Android12  SukiSU内核
 
 on:
   workflow_dispatch:
@@ -9,52 +9,101 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses the action is correctly specified and that it is available in the GitHub Marketplace.
+    - uses: actions/checkout@v3
 
-1. Verify the `kernelsu.yml` workflow file to check the usage of: actions/checkout@v3
+
 
     - name: 构建编译内核环境
       run: |
         sudo apt-get update
-        sudo - `actions/upload-artifact@v4`.
+        sudo -E apt-get -y -qq install git make bc bison ccache openssl dos2unix zip kmod cpio flex libelf-dev curl libssl-dev libtfm-dev wget device-tree-compiler ca-certificates python3 python2 binutils binutils-aarch64-linux-gnu binutils-arm-linux-gnueabi
+        mkdir -p $GITHUB_WORKSPACE/kernel_workspace
 
-2. Update the workflow fileE apt-get -y -qq install git make bc bison ccache opens if there are any syntax errors or version mismatches.
 
-Here issl dos2unix zip kmod c an example of how the `upload-artifactpio flex libelf-dev curl libssl-dev libtfm-dev wget device-tree-compiler ca-cert` action should be used in your workflow file:
-
-```ificates python3 python2.7
-
-    - name: 下载 Gcc编yaml
-name: Build Kernel
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-译器
+    - name: 下载 Gcc编译器
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
+        
         mkdir gcc64
-        wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/preb      uses: actions/checkout@v2
-
-    - name: Set up ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-
-    - name: Build Kernel
+        wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/tags/android-12.1.0_r27.tar.gz
+        tar -C gcc64/ -zxvf gcc-aarch64.tar.gz
+    
+        mkdir gcc32
+        wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/tags/android-12.1.0_r27.tar.gz
+        tar -C gcc32/ -zxvf gcc-arm.tar.gz
+    
+    - name: 下载Clang编译器
       run: |
-        make defconfig
-        make -j$(nproc)
+        cd $GITHUB_WORKSPACE/kernel_workspace
+        mkdir clang-aosp
+        git clone -q --depth=1 https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-6443078 -b 10.0 clang-aosp
 
-    - name: Upload Kernel
+
+    - name: 下载内核源码
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace
+        git clone --depth=1 https://github.com/Winkmoon/android_kernel_oppo_mt6853 -b oppo/mt6853_s_12.1_k7x android-kernel
+        cd android-kernel/kernel-4.14
+
+
+    - name: 拉取并集成SukiSU
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel-4.14
+        sed -i "\$s|echo \"\\\$res\"|echo \"-Xinran_StarBai_mt6853\"|" ./scripts/setlocalversion
+        curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s nongki
+
+        # 更新 SukiSU 版本号
+          cd ./KernelSU
+          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) + 10700)
+          export KSU_VERSION=$KSU_VERSION
+          sed -i "s/DKSU_VERSION=12800/DKSU_VERSION=$KSU_VERSION/" kernel/Makefile
+          cd ..
+          # 配置内核选项
+          echo "CONFIG_MODULE_SIG=n" >> ./arch/arm64/configs/OPPO-K7x_defconfig
+          echo "CONFIG_MODULE_SIG_ALL=n" >> ./arch/arm64/configs/OPPO-K7x_defconfig
+          echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/OPPO-K7x_defconfig
+          echo "CONFIG_KSU_TRACEPOINT_HOOK=y" >> ./arch/arm64/configs/OPPO-K7x_defconfig
+
+
+
+    - name: 设置ccache缓存
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: build-kernel-mido-kernel
+        max-size: 5G
+
+
+    - name: 编译OPPOk7x内核
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel-4.14
+        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin:$GITHUB_WORKSPACE/kernel_workspace/gcc64/bin:$GITHUB_WORKSPACE/kernel_workspace/gcc32/bin:$PATH
+        export KBUILD_BUILD_HOST=Xinran_LOVE_Bai
+        export KBUILD_BUILD_USER=@Xinran_StarBai
+        make -s -j$(nproc --all) O=out ARCH=arm64 OPPO-K7x_defconfig
+        make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- LD=ld.lld
+
+
+    - name: 制作Anykernel3卡刷包
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace
+        git clone https://github.com/Winkmoon/AnyKernel3
+        cp android-kernel/kernel-4.14/out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
+        rm -rf AnyKernel3/.git* AnyKernel3/README.md
+        cd AnyKernel3
+        zip -r9 ../oppok7x-SukiSU-ak3.zip *
+        cd ..
+
+
+
+    - name: 上传 Anykernel3
       uses: actions/upload-artifact@v3
-      withuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9:
-        name: kernel
-        path: path/to/kernel/output/+archive/refs/tags/android-12.1.0_r27.tar.gz
-       
+      with:
+        name: oppok7x-SukiSU@Xinran_StarBai-ak3
+        path: kernel_workspace/*.zip
+
+
+    - name: 上传编译内核
+      uses: actions/upload-artifact@v4
+      with:
+        name: oppok7x-SukiSU@Xinran_StarBai_gz-dtb
+        path: kernel_workspace/android-kernel/kernel-4.14/out/arch/arm64/boot/*.gz-dtb
